@@ -2,7 +2,8 @@ import base64
 import requests
 import os
 import json
-from all_screenshots_extract import screenshots
+import all_screenshots_extract as asc
+from config import api_key
 
 def extract_content(byte_str):
     # Decode byte string to string
@@ -17,11 +18,6 @@ def extract_content(byte_str):
     tokens = str(data["usage"]["total_tokens"])
     # Output the content string
     return [content_str, tokens]
-
-
-
-# OpenAI API Key
-api_key = os.environ.get("OPENAI_API_KEY")
 
 # Function to encode the image
 def encode_image(image_path):
@@ -71,9 +67,12 @@ def answer_question(image_path):
 
     return answer
 
+
+
 run = False
 if __name__ == "__main__":
     #screenshot mean the screenshot path
+   screenshots = asc.convert_to_jpeg_and_clean(asc.get_screenshot_files("/Users/davidandreas/Desktop"))
    if run:
     for screenshot in screenshots: 
         answer = answer_question(screenshot)

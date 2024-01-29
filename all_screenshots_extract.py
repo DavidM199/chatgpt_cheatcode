@@ -63,12 +63,3 @@ def get_new_screenshots(desktop_path):
             screenshot_files.append(item_path)
 
     return screenshot_files
-
-# Replace this with the path to your desktop
-desktop_path = "/Users/davidandreas/Desktop" 
-new_screenshots = get_new_screenshots(desktop_path)
-
-if len(new_screenshots) > 0:
-    # Convert the files to JPEG and clean up
-    screenshots = convert_to_jpeg_and_clean(new_screenshots)
-print(screenshots)
