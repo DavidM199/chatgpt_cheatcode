@@ -50,8 +50,25 @@ def get_screenshot_files(desktop_path):
 
     return screenshot_files
 
+def get_new_screenshots(desktop_path):
+    screenshot_files = []
+
+    # List all files and folders on the desktop
+    for item in os.listdir(desktop_path):
+        # Construct full file path
+        item_path = os.path.join(desktop_path, item)
+
+        # Check if it is a file and starts with 'screenshot'
+        if os.path.isfile(item_path) and item.lower().startswith('screenshot') and item.lower().endswith('.png'):
+            screenshot_files.append(item_path)
+
+    return screenshot_files
+
 # Replace this with the path to your desktop
 desktop_path = "/Users/davidandreas/Desktop" 
+new_screenshots = get_new_screenshots(desktop_path)
 
-screenshots = convert_to_jpeg_and_clean(get_screenshot_files(desktop_path))
+if len(new_screenshots) > 0:
+    # Convert the files to JPEG and clean up
+    screenshots = convert_to_jpeg_and_clean(new_screenshots)
 print(screenshots)
