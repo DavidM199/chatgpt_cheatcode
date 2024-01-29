@@ -8,7 +8,7 @@ import all_screenshots_extract as asc
 import config
 import time
 
-desktop_path = "/qUsers/davidandreas/Desktop"
+desktop_path = "/Users/davidandreas/Desktop"
 
 
 while True:
