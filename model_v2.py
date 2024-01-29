@@ -24,6 +24,11 @@ root.title("Output Window")
 root.geometry("300x100")
 root.attributes("-alpha", 0.5)  # Alpha 0.5
 
+# Ez lemaradt az előbb
+output_label = tk.Label(root, text="Waiting for output...", wraplength=280)
+output_label.pack(expand=True)
+
+
 class MyHandler(FileSystemEventHandler):
     def on_created(self, event):
         if not event.is_directory:
