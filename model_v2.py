@@ -1,79 +1,82 @@
 import os
-import time
+import datetime
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 import easyocr
-import openai
-import tkinter as tk
+from openai import OpenAI
+import time
+import platform
+import threading
 
-# EasyOCR inditása (itt lehet majd majomkodni azzal hogy más nyelven is müködjön)
-reader = easyocr.Reader(['en'])
+client = OpenAI()
 
-# Nem tudtam felallitani a virtual enviromentet szoval igy oldottam meg bruh
-openai.api_key = 'your-api-key'
+class Watcher:
+    # Check the operating system
+    if platform.system() == "Windows":
+        DIRECTORY_TO_WATCH = os.path.join(os.environ['USERPROFILE'], 'Desktop')
+    else:
+        DIRECTORY_TO_WATCH = os.path.join(os.environ['HOME'], 'Desktop')
 
-# Ezt at kell irni majd a sajat dekstop path-ra
-desktop_path = "/Users/szilardmate/desktop"
+    def __init__(self):
+        self.observer = Observer()
 
-# Timestamp
-start_timestamp = time.time()
+    def run(self):
+        event_handler = Handler()
+        self.observer.schedule(event_handler, self.DIRECTORY_TO_WATCH, recursive=False)
+        self.observer.start()
+        try:
+            while True:
+                time.sleep(1)
+        except:
+            self.observer.stop()
+            print("Observer Stopped")
 
-# Új tab
-root = tk.Tk()
-root.title("Output Window")
-root.geometry("300x100")
-root.attributes("-alpha", 0.5)  # Alpha 0.5
+        self.observer.join()
 
-# Ez lemaradt az előbb
-output_label = tk.Label(root, text="Waiting for output...", wraplength=280)
-output_label.pack(expand=True)
+class Handler(FileSystemEventHandler):
+    @staticmethod
+    def on_created(event):
+        print("Detected new file:", event.src_path)
+        time.sleep(1)  # Short delay before processing the file
+        if 'screenshot' in event.src_path.lower() and datetime.datetime.fromtimestamp(os.path.getmtime(event.src_path)) > Handler.start_time:
+            currentVariable = event.src_path
+            extractedString = extract_text(currentVariable)
+            response = query_gpt(extractedString)
+            display_response(response)
 
+    start_time = datetime.datetime.now()
 
-class MyHandler(FileSystemEventHandler):
-    def on_created(self, event):
-        if not event.is_directory:
-            file_path = event.src_path
-            file_name = os.path.basename(file_path)
-            file_creation_time = os.path.getctime(file_path)
+def extract_text(image_path, max_attempts=5, delay=1):
+    for attempt in range(max_attempts):
+        try:
+            reader = easyocr.Reader(['en'])
+            result = reader.readtext(image_path)
+            extracted_text = ' '.join([text[1] for text in result])
+            print(extract_text)
+            return extracted_text
+        except FileNotFoundError:
+            print(f"Attempt {attempt+1}: File not found, retrying...")
+            time.sleep(delay)
+    return "Error: File not found after multiple attempts."
 
-            # Csekkeli, hogy screenshot benne van-e a file nevében illetve, hogy a timestamp utan készült-e
-            if "screenshot" in file_name.lower() and file_creation_time > start_timestamp:
-                print(f"Processing: {file_name}")
-                self.process(file_path)
-
-    def process(self, file_path):
-        # Image to text
-        extracted_text = reader.readtext(file_path, detail = 0)
-        extracted_string = ' '.join(extracted_text)
-
-        # Gpt prompt
-        prompt = f"Find the multiple choice question in the following paragraph: {extracted_string} What is the correct answer? Only return the correct answer."
-
-        # Send text to GPT
-        response = openai.Completion.create(
-            engine="text-davinci-003",
-            prompt=prompt,
-            max_tokens=60  # Még tesztelni kell meddig lehet levinni
-        )
-
-        # Extract just the answer from the response
-        answer = response.choices[0].text.strip()
-
-        # A taben kiírja a valaszt
-        output_label.config(text=f"Answer: {answer}")
-
-if __name__ == "__main__":
-    event_handler = MyHandler()
-    observer = Observer()
-    observer.schedule(event_handler, path=desktop_path, recursive=False)
-    observer.start()
-
-    # UI inditása
-    root.mainloop()
-
+def query_gpt(text):
     try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        observer.stop()
-    observer.join()
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo-0613",
+            messages=[
+                {"role": "system", "content": "Extract the multiple choice question and provide the correct answer."},
+                {"role": "user", "content": text}
+            ]
+        )
+        return response.choices[0].message['content']
+    except Exception as e:
+        print(f"Error querying GPT: {e}")
+        return "Error"
+
+def display_response(response):
+    print("Response:", response)
+
+if __name__ == '__main__':
+    w = Watcher()
+    watcher_thread = threading.Thread(target=w.run)  # Create a thread for the watcher
+    watcher_thread.start()  # Start the watcher thread
