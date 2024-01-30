@@ -7,7 +7,6 @@ from openai import OpenAI
 import time
 import platform
 import threading
-import re
 import logging
 
 
@@ -78,7 +77,7 @@ def process(final_path):
                         os.remove(final_path)
 
 def is_intermediate_screenshot(path):
-        # Using regex to match the pattern '.Screenshot...png'
+        # match the pattern '.Screenshot...png'
         return ".Screenshot" in path and path.endswith('.png')
 
 def extract_text(image_path):

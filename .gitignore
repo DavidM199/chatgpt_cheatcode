@@ -1,6 +1,6 @@
 *.local
 /dist
 __pycache__/
-*-log
+*.log
 openai-env/
 venv/
