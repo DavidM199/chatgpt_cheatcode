@@ -8,11 +8,14 @@ import time
 import platform
 import threading
 import logging
+import warnings
 
+
+# Ignore GPU absence warning from EasyOCR
+warnings.filterwarnings("ignore", category=UserWarning, module='easyocr')
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', filename='model_v2.log', filemode='w')
 logger = logging.getLogger(__name__)
-
 
 client = OpenAI()
 
