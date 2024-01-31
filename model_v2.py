@@ -76,7 +76,7 @@ def process(final_path):
                         currentVariable = final_path
                         extractedString = extract_text(currentVariable)
                         response = query_gpt(extractedString)
-                        display_response(response)
+                    
                         os.remove(final_path)
 
 def is_intermediate_screenshot(path):
@@ -93,7 +93,10 @@ def extract_text(image_path):
     except FileNotFoundError:
         logger.error(f"Extract_text attempt: File not found, retrying...")
         
-    
+def notify(title, text):
+    os.system("""
+              osascript -e 'display notification "{}" with title "{}"'
+              """.format(text, title))    
 
 def query_gpt(text):
     try:
@@ -104,13 +107,13 @@ def query_gpt(text):
                 {"role": "user", "content": text}
             ]
         )
-        return response.choices[0].message.content
+        answer = response.choices[0].message.content
+        notify("Answer:", answer)
     except Exception as e:
         logger.error(f"Error querying GPT: {e}")
         return "Error"
 
-def display_response(response):
-    print("Response:", response)
+
 
 if __name__ == '__main__':
     w = Watcher()
@@ -123,3 +126,4 @@ if __name__ == '__main__':
             time.sleep(1)
     except KeyboardInterrupt:
         print(" Exiting...")
+
