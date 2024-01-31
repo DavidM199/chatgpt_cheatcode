@@ -8,11 +8,13 @@ import time
 import platform
 import threading
 import logging
+import warnings
 
+# Ignore GPU absence warning from EasyOCR
+warnings.filterwarnings("ignore", category=UserWarning, module='easyocr')
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', filename='model_v2.log', filemode='w')
 logger = logging.getLogger(__name__)
-
 
 client = OpenAI()
 
@@ -83,7 +85,7 @@ def is_intermediate_screenshot(path):
 def extract_text(image_path):
     
     try:
-        reader = easyocr.Reader(['en'])
+        reader = easyocr.Reader(['en'], gpu=False) # Setting default processign method to cpu
         result = reader.readtext(image_path)
         extracted_text = ' '.join([text[1] for text in result])
         return extracted_text
