@@ -5,3 +5,4 @@ __pycache__/
 openai-env/
 venv/
 .DS_store
+.vscode/
