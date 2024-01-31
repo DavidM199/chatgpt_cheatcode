@@ -111,5 +111,12 @@ def display_response(response):
 
 if __name__ == '__main__':
     w = Watcher()
-    watcher_thread = threading.Thread(target=w.run)  # Create a thread for the watcher
-    watcher_thread.start()  # Start the watcher thread
+    watcher_thread = threading.Thread(target=w.run)
+    watcher_thread.daemon = True  # Set the thread as a daemon
+    watcher_thread.start()
+
+    try:
+        while True:  # Keep the main thread alive
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print("Exiting...")

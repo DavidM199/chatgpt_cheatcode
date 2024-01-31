@@ -4,3 +4,4 @@ __pycache__/
 *.log
 openai-env/
 venv/
+.DS_store
