@@ -10,6 +10,7 @@ import threading
 import logging
 import warnings
 
+
 # Ignore GPU absence warning from EasyOCR
 warnings.filterwarnings("ignore", category=UserWarning, module='easyocr')
 
@@ -85,7 +86,7 @@ def is_intermediate_screenshot(path):
 def extract_text(image_path):
     
     try:
-        reader = easyocr.Reader(['en'], gpu=False) # Setting default processign method to cpu
+        reader = easyocr.Reader(['en'], gpu=False, quantize=False) # Setting default processign method to cpu
         result = reader.readtext(image_path)
         extracted_text = ' '.join([text[1] for text in result])
         return extracted_text
