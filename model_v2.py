@@ -119,4 +119,4 @@ if __name__ == '__main__':
         while True:  # Keep the main thread alive
             time.sleep(1)
     except KeyboardInterrupt:
-        print("Exiting...")
+        print(" Exiting...")
