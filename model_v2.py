@@ -86,7 +86,7 @@ def is_intermediate_screenshot(path):
 def extract_text(image_path):
     
     try:
-        reader = easyocr.Reader(['en'], gpu=False, quantize=False) # Setting default processign method to cpu
+        reader = easyocr.Reader(['en'])
         result = reader.readtext(image_path)
         extracted_text = ' '.join([text[1] for text in result])
         return extracted_text
