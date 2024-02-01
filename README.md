@@ -19,24 +19,57 @@ The bot can take any multiple choice question after it has been screenshotted an
 The bot can be run with _**model_v2.py**_.
 
 Files _all_screenshots_extract.py, bot_base64.py, bot_url.py, config.py, run.py_ were used for preliminary idea exploration
-that lead us to the final version and completion of the project. 
+that lead us to the final version and completion of the project.
 
-### _**Important:**_ 
+## Flow of the script
 
-Before running model_v2.py, you have to _add your openai api key as an environment variable_ with the line \
-`export OPENAI_API_KEY='yourapikey'`. (add to ~/.zshrc or ~/.bash_profile)
+1. Take a screenshot
+2. Extract text using EasyOCR
+3. Send API request to GPT-api
+4. Display response in MacOs notification
+5. Screenshot gets deleted after response
 
 ## Using the bot
 
-1. Take a Screenshot with cmd shift 4 (on MacOs) to be able to select a region
-2. Select the region where your multiple choice question is
-3. The script will look for new screenshot files and once one is detected and processed, it will delete your screenshot (we don't want to leave evidence)
-4. Your question and answers are fed to ChatGPT via API
-5. *The response appears in a form of a sneaky notification*
+1. Clone repository
+```bash
+  git clone https://github.com/DavidM199/chatgpt_cheatcode
+``` 
 
-### Requirements
+2. Install Requirements
+```bash
+  pip install -r requirements.txt
+```
+
+3. Set the OPENAI api key to env
+```bash
+  export OPENAI_API_KEY="yourapikey"
+```
+
+4. Run the bot:
+```bash
+  python model_v2.py
+```
+
+5. Wait for Terminal to showcase:
+```bash
+  Listening on desktop...
+```
+#### 6. Take an area screenshot of the question
+- On Mac: SHIFT + CMD + 4
+- On Windows: ALT + PrntScr
+  ![Test](https://help.blackboard.com/sites/default/files/images/2020-02/ultra_stud_view_MC_ques.png)
+
+#### 7. Wait for response
+- Usually takes a few seconds
+  
+  ![push_not](https://github.com/DavidM199/chatgpt_cheatcode/assets/147255010/37bde15f-9385-4519-8257-ab7c0798ba00)
+
+
+## Requirements
 The following packages are required for model_v2.py to work. All requirements and versions are in requirements.txt (requirements for other files are also included).
-- easyocr
-- watchdog
-- openai
+- EasyOCR
+- PyTorch
+- Watchdog
+- OpenAI
 
